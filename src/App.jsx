@@ -1,49 +1,26 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import Navbar from "./components/Navbar";
-import PostList from "./components/PostList";
-import UserList from "./components/UserList";
-import AddPostForm from "./components/AddPostForm";
+import HomePage from "./pages/HomePage";
+import PostDetailPage from "./pages/PostDetailPage";
+import FavoritesPage from "./pages/FavoritesPage";
+import ProfilePage from "./pages/ProfilePage";
 
 function App() {
-  const [favorites, setFavorites] = useState(() => {
-    return JSON.parse(localStorage.getItem("favorites") || "[]");
-  });
-
-  function handleToggleFavorite(postId) {
-    setFavorites((prev) => {
-      const next = prev.includes(postId)
-        ? prev.filter((id) => id !== postId)
-        : [...prev, postId];
-      localStorage.setItem("favorites", JSON.stringify(next));
-      return next;
-    });
-  }
-
   return (
-    <div style={{ minHeight: "100vh", background: "#f7fafc" }}>
-      <Navbar favoriteCount={favorites.length} />
-      <div
-        style={{
-          maxWidth: "900px",
-          margin: "2rem auto",
-          padding: "0 1rem",
-          display: "grid",
-          gridTemplateColumns: "2fr 1fr",
-          gap: "2rem",
-        }}
-      >
-        <div>
-          <AddPostForm onAddPost={() => {}} />
-          <PostList
-            favorites={favorites}
-            onToggleFavorite={handleToggleFavorite}
-          />
+    <BrowserRouter>
+      <FavoritesProvider>
+        <div style={{ minHeight: "100vh", background: "#f7fafc" }}>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/posts/:id" element={<PostDetailPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+          </Routes>
         </div>
-        <div>
-          <UserList />
-        </div>
-      </div>
-    </div>
+      </FavoritesProvider>
+    </BrowserRouter>
   );
 }
 
